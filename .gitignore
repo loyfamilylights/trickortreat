@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+venv/
+config/settings.json
+config/status.json
+config/local_queue.json
+config/local_queue.lock
+config/*.tmp
+config/uploads/
+*.pid
+*.log
+.DS_Store

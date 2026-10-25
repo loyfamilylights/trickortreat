@@ -1,0 +1,65 @@
+{
+  "repoName": "fpp-plugin-trickortreat",
+  "name": "Trick-or-Treat News",
+  "author": "Loy Family Lights (fork of fpp-plugin-naughtynice by Joseph Jarboe)",
+  "description": "Halloween 'Spooky News' broadcast for your LED matrix: trick-or-treater names, a TREAT/TRICK verdict, photo or costume art, and a scrolling ticker. Enter names from a phone on your Wi-Fi - no cloud needed.",
+  "homeURL": "https://github.com/loyfamilylights/trickortreat",
+  "srcURL": "https://github.com/loyfamilylights/trickortreat.git",
+  "bugURL": "https://github.com/loyfamilylights/trickortreat/issues",
+  "allowUpdates": 1,
+  "versions": [
+    {
+      "minFPPVersion": "9.0",
+      "maxFPPVersion": "9.999",
+      "branch": "main",
+      "sha": "",
+      "dependencies": {
+        "plugins": [],
+        "packages": [],
+        "scripts": []
+      }
+    },
+    {
+      "minFPPVersion": "10.0",
+      "maxFPPVersion": "0",
+      "branch": "main",
+      "sha": "",
+      "dependencies": {
+        "plugins": [],
+        "packages": [],
+        "scripts": []
+      }
+    }
+  ],
+  "privacy": {
+    "summary": "Locally accepts visitor names and costume selections and optional phone camera photos to display Halloween greetings on FPP. Stores submissions and photos on the controller. An optional administrator-configured cloud service can exchange submission data; it is inactive until configured.",
+    "sends": [
+      {
+        "to": "An administrator-configured external cloud service (optional)",
+        "what": "Cloud submissions and responses, including submitted names, costume information and potentially photos, depending on the configured service",
+        "why": "To retrieve and process optional cloud-based Trick-or-Treat submissions",
+        "alwaysOn": false
+      }
+    ],
+    "collects": [
+      {
+        "what": "Visitor first names, costume selections, optional uploaded photos, and local submission queue/status",
+        "where": "On the FPP controller in the plugin private configuration and uploads directories",
+        "why": "To queue and display personalized greetings on the LED matrix"
+      }
+    ],
+    "sensors": [
+      {
+        "what": "Optional visitor phone camera or photo library",
+        "why": "Visitor-selected photo upload for display; no microphone use",
+        "alwaysOn": false
+      }
+    ],
+    "remoteAccess": "local-network",
+    "systemChanges": [
+      "Installs Python dependencies in a plugin virtual environment and a plugin-owned FPP shared display script; may create or change FPP Pixel Overlay Models and playlists only when the administrator explicitly runs zone setup; starts its own background daemon."
+    ],
+    "closedCode": false,
+    "other": "The door form is served by FPP over the network; anyone who can reach that form may submit a greeting. No internet exposure is configured by this plugin. Photo capture is optional and browser-initiated. The plugin does not automatically remove submitted data or plugin settings on uninstall; administrators should manage saved names and photos. Optional cloud access requires an administrator-supplied URL and token. Installer requires network access to install Python packages. The plugin source is publicly available on GitHub."
+  }
+}
