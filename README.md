@@ -142,3 +142,21 @@ before taking or displaying children's photographs.
 **Deployment:** Back up your existing plugin `config/`, FPP playlists and pixel-overlay models first. Replace plugin source with this release, retain existing `config/`, install/upgrade using FPP Plugin Manager or `scripts/fpp_upgrade.sh`, then use the plugin setup page to run a **dry-run** of zone provisioning. Perform any actual zone writes only after inspecting the proposed model list. Restart FPPD (full) and test one TREAT and one TRICK. The automated tests do not verify behavior on physical FPP hardware.
 
 **Security:** The door form is intended only for a trusted local Wi-Fi network. Do not expose FPP or the door form to the public internet. Ask a guardian before photographing children. Administrative FPP pages should remain access-restricted.
+
+## FPP 10.3 field fixes (v1.0.1)
+
+- Installation repairs a root-owned **plugin-specific** log file when the installer
+  is run as root; it does not change ownership of unrelated logs.
+- Startup now reports a clear permission error if it cannot append to the log.
+- Before delivering a queued greeting, the daemon checks `GET /api/models`
+  for the configured ticker model. If missing or unreadable, the submission
+  stays queued; no photo upload or playlist interruption is attempted, and
+  retries are slowed to at least 15 seconds.
+- To fix `No model found: TickerZone`, visit **Zone setup**, run **Dry run**,
+  inspect the proposed overlay/channel layout, then approve **Re-run zone
+  setup** without Full reset unless deliberately rebuilding both zones.
+  Restart FPPD (full) afterward so the created models are loaded.
+- `spooky_news` playlist-activation status warnings are not proven fixed;
+  confirm the live FPP playback status and playlist setup separately.
+
+These updates do not automatically create/change existing FPP models or playlists.
