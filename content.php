@@ -29,20 +29,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $totSettings['poll_interval_seconds'] = max(5, intval($_POST['poll_interval_seconds'] ?? 10));
         $totSettings['playlist'] = trim($_POST['playlist'] ?? 'spooky_news');
         $totSettings['ticker_model'] = trim($_POST['ticker_model'] ?? 'TickerZone');
-        $mode = $_POST['display_mode'] ?? 'zones';
-        $totSettings['display_mode'] = in_array($mode, ['zones', 'virtual_matrix', 'remote_virtual_matrix'], true) ? $mode : 'zones';
-        $remoteUrl = rtrim(trim($_POST['remote_fpp_url'] ?? 'http://192.168.1.113'), '/');
-        $totSettings['remote_fpp_url'] = preg_match('~^http://(?:[0-9]{1,3}\.){3}[0-9]{1,3}(?::[0-9]{1,5})?$~', $remoteUrl) ? $remoteUrl : 'http://192.168.1.113';
-        if (in_array($totSettings['display_mode'], ['virtual_matrix', 'remote_virtual_matrix'], true)) {
-            $totSettings['photo_model'] = 'VirtualMatrix';
-            $totSettings['ticker_model'] = 'VirtualMatrix';
-            $totSettings['matrix_width'] = 224;
-            $totSettings['matrix_height'] = 126;
-            $totSettings['photo_zone_height'] = 126;
-            $totSettings['ticker_zone_height'] = 0;
-        }
-        $totSettings['matrix_width'] = in_array($totSettings['display_mode'], ['virtual_matrix', 'remote_virtual_matrix'], true) ? 224 : max(1, intval($_POST['matrix_width'] ?? 192));
-        $totSettings['photo_zone_height'] = in_array($totSettings['display_mode'], ['virtual_matrix', 'remote_virtual_matrix'], true) ? 126 : max(1, intval($_POST['photo_zone_height'] ?? 140));
+        $totSettings['matrix_width'] = max(1, intval($_POST['matrix_width'] ?? 192));
+        $totSettings['photo_zone_height'] = max(1, intval($_POST['photo_zone_height'] ?? 140));
         $totSettings['enabled'] = isset($_POST['enabled']);
 
         $r = tot_save_settings($totSettings);
@@ -67,8 +55,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             tot_flash(tot_fpp_system_action($totSettings, '/api/system/reboot', 5));
         }
-    } elseif ($totAction === 'provision' && in_array(($totSettings['display_mode'] ?? 'zones'), ['virtual_matrix', 'remote_virtual_matrix'], true)) {
-        tot_flash(array('ok' => false, 'message' => 'HDMI mode uses the existing VirtualMatrix. Zone provisioning blocked to protect existing outputs.'));
     } elseif ($totAction === 'provision') {
         // Same auto-provisioning fpp_install.sh runs on first install.
         $venvPython = TOT_PLUGIN_DIR . '/venv/bin/python3';
@@ -309,16 +295,6 @@ $last = isset($totStatus['last_item']) ? $totStatus['last_item'] : null;
       <label for="playlist">Playlist to trigger</label>
       <input type="text" id="playlist" name="playlist" value="<?php echo tot_h($totSettings['playlist']); ?>">
 
-      <label for="display_mode">Display mode</label>
-      <select id="display_mode" name="display_mode">
-        <option value="zones" <?php echo ($totSettings['display_mode'] ?? 'zones') === 'zones' ? 'selected' : ''; ?>>Original photo + ticker zones</option>
-        <option value="remote_virtual_matrix" <?php echo ($totSettings['display_mode'] ?? '') === 'remote_virtual_matrix' ? 'selected' : ''; ?>>MASTER 192.168.1.192 → Snow-Globe 192.168.1.113 (224x126, no playlist start)</option>
-        <option value="virtual_matrix" <?php echo ($totSettings['display_mode'] ?? '') === 'virtual_matrix' ? 'selected' : ''; ?>>Snow-Globe HDMI VirtualMatrix 224x126 (no zone provisioning)</option>
-      </select>
-      <label for="remote_fpp_url">Remote FPP address (Snow-Globe)</label>
-      <input type="text" id="remote_fpp_url" name="remote_fpp_url" value="<?php echo tot_h($totSettings['remote_fpp_url'] ?? 'http://192.168.1.113'); ?>">
-      <small>Remote HDMI mode sends PNGs via the remote FPP API and runs the remote display helper; Master playlist continues running.</small><br>
-      <small>HDMI mode uses your existing VirtualMatrix model at channels 1–84672. Do not click Re-run zone setup or Full reset. Full-frame ticker is drawn into the image.</small>
       <label for="ticker_model">Ticker overlay model name</label>
       <input type="text" id="ticker_model" name="ticker_model" value="<?php echo tot_h($totSettings['ticker_model']); ?>">
 
