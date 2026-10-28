@@ -42,6 +42,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         // Read the exact command already verified using Run Now on Master.
         // This is NOT the broken Trigger Command Preset route.
         $base = 'http://127.0.0.1';
+        $remote = 'http://192.168.1.113';
         $preset = ['code' => 0, 'body' => ''];
         $definition = null;
         $name = '';
@@ -72,15 +73,15 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
             } else {
                 $command = [
                     'command' => $cmd,
-                    'multisyncCommand' => true,
-                    'multisyncHosts' => '192.168.1.113',
+                    'multisyncCommand' => false,
+                    'multisyncHosts' => '',
                     'args' => $args,
                 ];
-                $sent = tot_api_request($base . '/api/command', 'POST', json_encode($command));
+                $sent = tot_api_request($remote . '/api/command', 'POST', json_encode($command));
                 $success = $sent['code'] >= 200 && $sent['code'] < 300 && $sent['ok'];
                 $message = $success
-                    ? 'FPP accepted direct ' . strtoupper($choice) . ' Overlay Model Effect. Check Snow-Globe projector.'
-                    : 'Direct command failed (HTTP ' . $sent['code'] . '): ' . substr(strip_tags($sent['body']), 0, 220);
+                    ? 'Snow-Globe accepted ' . strtoupper($choice) . ' overlay request (HTTP ' . $sent['code'] . '). Check projector.'
+                    : 'Snow-Globe direct command failed (HTTP ' . $sent['code'] . '): ' . substr(strip_tags($sent['body']), 0, 220);
             }
         }
     }
@@ -96,13 +97,13 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
 </style>
 <section class="tot-simple">
 <h2>🎃 Loy Family Lights — TRICK or TREAT</h2>
-<p><strong>CONTROL PANEL FIX v3 — Direct Overlay API</strong></p>
+<p><strong>CONTROL PANEL FIX v4 — Snow-Globe Direct API</strong></p>
 <p>Master <strong>192.168.1.192</strong> → Snow-Globe <strong>192.168.1.113</strong><br>224 × 126 HDMI VirtualMatrix</p>
 <div class="controls">
 <form method="post"><input type="hidden" name="verdict" value="treat"><button class="treat" type="submit">🍬 TREAT!</button></form>
 <form method="post"><input type="hidden" name="verdict" value="trick"><button class="trick" type="submit">👻 TRICK!</button></form>
 </div>
 <?php if ($message !== ''): ?><p class="result" role="status"><?php echo htmlspecialchars($message, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></p><?php endif; ?>
-<small>Reads and replays the direct Overlay Model Effect in the existing Master FPP command presets with names matching <code>treat</code> or <code>TRICK</code> (case-insensitive variants attempted). Both presets must already use direct MultiSync Overlay Model Effect targeting Snow-Globe only. The page reads each saved command and submits it to FPP without using Trigger Command Preset.</small>
-<small>No daemon, no new playlist, no channel changes. An HTTP success confirms the command request was accepted, not that the projector visibly updated.</small>
+<small>Reads and replays the direct Overlay Model Effect in the existing Master FPP command presets with names matching <code>treat</code> or <code>TRICK</code> (case-insensitive variants attempted). Both presets must already use direct MultiSync Overlay Model Effect targeting Snow-Globe only. The page reads each Master preset, then sends its overlay effect directly to Snow-Globe at 192.168.1.113, bypassing Master API MultiSync forwarding.</small>
+<small>No daemon, new playlist, or channel changes. Run only on your trusted local network. An HTTP success means Snow-Globe accepted the request; inspect the projector to confirm actual display.</small>
 </section>
